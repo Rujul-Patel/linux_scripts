@@ -29,14 +29,14 @@ echo  -e "$(whoami)@$(hostname)  $(uname -rs)"
 echo -e "$(date) \t $(uptime -p)"
 
 #System Utilization Details
-echo "------------------------------------------------------------------------------------------------------"
+echo "---------------------------------------------------------------------------------------------------"
 
 #CPU
-echo -e "\n-----CPU Utilization-----"
+echo -e "\nCPU Utilization\n----------------------"
 echo "$(mpstat -u | tail -n 2)"
 
 #Memory 
-echo -e "\n-----Disk and Memory-----"
+echo -e "\nDisk and Memory\n--------------------"
 echo "$(free --human)"
 
 #Disk 
@@ -46,48 +46,41 @@ echo -e "\n$(iostat -dt | tail -n 5)"
 #Network
 
 #System Information
-echo "------------------------------------------------------------------------------------------------------"
+echo -e "\n---------------------------------------------------------------------------------------------------\n"
+
 
 #Current top processes
-    
 
 
-
-
-exit
-
-
-
-
-
-
-echo "Welcome, $(whoami)."
-
-#####   GENERAL SYSTEM INFORMATION ####
-#Kernel version
-echo "OS: $(uname -sr)"
-
-#Disk Usage
-echo -e "\nDISK USAGE \n********************"
-
-#Network Details
-echo -e "\nNETWORK \n********************"
-
-#Wifi
+echo -e "Network\n-------------------------"
+#Network details
 echo -e "$(iwgetid ) \n$(iwgetid -f)"
-
-#IP 
 echo -e "\n$(ip -brief addr | grep "enps*\|eth[0-9]$\|wlan*")"
 
+echo -e "$(vnstat -s -i enp3s0f1)"
+echo -e "$(vnstat -s -i wlan0)"
+
+
+
+echo -e "\n---------------------------------------------------------------------------------------------------\n"
+
+echo -e "Packages (Pacman + AUR)\n---------------------------"
+echo -e "\nTotal Packages : $(pacman -Qq | wc -l)\t Pacman: $(pacman -Qn | wc -l)\t AUR: $(pacman -Qm | wc -l)"
+
+#Display no of packages to update
+#Note: to check updates, pacman must syncrohize which requires root privileges.
+if [[ $EUID -eq 0 ]]; then
+    echo -e "$(pacman -Sy 2> /dev/null)"
+else
+    echo -e "\nPacman not synchronized. Must be run as root\n"
+fi
+
+echo -e "\nUpdates Available : "
+echo -e "$(pacman -Qu)"
+
+
 #Docker Containers
-echo -e "\nDOCKER CONTAINERS\n********************"
+echo -e "\nDOCKER CONTAINERS\n-------------------------"
 echo -e "$(docker ps -a --format "table{{.Names}}\t{{.Status}}\t{{.Ports}}\t{{.Size}}")"
 
 
-
-#Weather
-echo -e "\nWEATHER FORECAST\n********************"
-echo -e "$( curl -s wttr.in  | head -n 17 | tail -n 10)"
-
-
-#test
